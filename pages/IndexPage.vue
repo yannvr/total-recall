@@ -1,5 +1,6 @@
 <template>
   <q-page class="row items-center justify-evenly">
+    <ConversationList />
   </q-page>
 </template>
 
