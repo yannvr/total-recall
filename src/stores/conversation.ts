@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import { api } from 'src/boot/axios';
 
 interface Tag {
   id: number;
@@ -51,10 +51,20 @@ export const useConversationsStore = defineStore('conversations', {
         },
       };
 
-      // Simulate an API request
+      // Check environment variable
+      console.log('isMockApi:', import.meta.env);
+      const isMockApi = import.meta.env.VITE_MOCK_API === '1';
+
       try {
-        // const response = await axios.post('https://dreamcatcher.run/api/sendPrompt', { prompt });
-        const response = mockResponse; // Use mock response for now
+        let response;
+        if (isMockApi) {
+          response = mockResponse;
+        } else {
+          response = await api.post('/sendPrompt', {
+            prompt,
+            provider: 'anthropic',
+          });
+        }
         const botMessage = {
           id: Date.now() + 1,
           text: response.data.reply,
