@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
         <q-toolbar-title>
-          Quasar App
+          Total Recall
         </q-toolbar-title>
       </q-toolbar>
     </q-header>

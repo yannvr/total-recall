@@ -2,11 +2,11 @@
   <q-list>
     <q-item>
       <q-item-section>
-        <q-input v-model="searchQuery" placeholder="Search tags..." />
+        <q-input v-model="searchQuery" placeholder="Search conversations..." />
       </q-item-section>
     </q-item>
     <q-item-label header>Conversations</q-item-label>
-    <q-item v-for="conversation in filteredConversations" :key="conversation.id">
+    <q-item v-for="conversation in filteredConversations" :key="conversation.id" @click="selectConversation(conversation.id)">
       <q-item-section>
         <q-item-label>{{ conversation.text }}</q-item-label>
         <q-item-label caption>
@@ -27,9 +27,10 @@ const conversations = computed(() => store.conversations);
 const searchQuery = ref('');
 
 const filteredConversations = computed(() => {
+  const query = searchQuery.value.toLowerCase();
   return conversations.value.filter(conversation => {
-    const query = searchQuery.value.toLowerCase();
-    return conversation.tags.some(tag => tag.name.toLowerCase().includes(query));
+    // Include conversations without tags or with tags matching the search query
+    return conversation.tags.length === 0 || conversation.tags.some(tag => tag.name.toLowerCase().includes(query));
   });
 });
 
@@ -41,5 +42,9 @@ const tagColors: Record<string, string> = {
 
 function getTagColor(tagName: string): string {
   return tagColors[tagName] || 'grey';
+}
+
+function selectConversation(conversationId: number) {
+  store.selectConversation(conversationId);
 }
 </script>

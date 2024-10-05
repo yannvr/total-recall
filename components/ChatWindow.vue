@@ -1,73 +1,40 @@
 <template>
   <div>
-    <!-- <div v-for="conversation in conversations" :key="conversation.id" class="q-pa-md row justify-center">
-      <div style="width: 100%; max-width: 400px">
-        <q-chat-message :text="[conversation.text]" :name="'User'" :avatar="'https://cdn.quasar.dev/img/avatar1.jpg'" />
-        <div v-for="tag in conversation.tags" :key="tag.id">{{ tag.name }}</div>
-        <q-input v-model="newTag" placeholder="Add a tag" @keyup.enter="addTag(conversation.id, newTag)" />
-      </div>
-    </div> -->
-    <div class="q-pa-md row justify-center">
-      <div style="width: 100%; max-width: 400px">
-        <q-chat-message v-for="message in messages" :key="message.id" :text="[message.text]" :name="message.name"
-          :avatar="message.avatar" />
-        <q-input v-model="prompt" placeholder="Type a message" @keyup.enter="sendPrompt" />
-      </div>
-    </div>
+    <q-list v-if="selectedConversationMessages.length">
+      <q-item v-for="message in selectedConversationMessages" :key="message.id">
+        <q-item-section avatar>
+          <q-avatar>
+            <img :src="message.avatar" />
+          </q-avatar>
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>{{ message.name }}</q-item-label>
+          <q-item-label caption>{{ message.text }}</q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+    <q-input v-model="prompt" placeholder="Type a message..." @keyup.enter="sendPrompt" />
   </div>
 </template>
 
-<script lang="ts">
-import { useConversationsStore } from 'src/stores/conversation';
-import { ref } from 'vue';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useConversationsStore } from 'stores/conversation';
 
-export default {
-  name: 'ChatWindow',
-  setup() {
-    const store = useConversationsStore();
-    const newTag = ref('');
-    const prompt = ref('');
+const store = useConversationsStore();
+const prompt = ref('');
 
-    const addConversation = () => {
-      store.addConversation({ id: Date.now(), text: 'New Conversation', tags: [] });
-    };
+const selectedConversationMessages = computed(() => {
+  const conversation = store.conversations.find(
+    (c) => c.id === store.selectedConversationId,
+  );
+  return conversation ? conversation.messages : [];
+});
 
-    const addTag = (conversationId: number, tag: string) => {
-      console.log('addTag', conversationId, tag);
-      store.addTag(conversationId, { id: Date.now(), name: tag });
-      newTag.value = '';
-    };
-
-    const sendPrompt = async () => {
-      if (prompt.value.trim() === '') return;
-      await store.sendPrompt(prompt.value);
-      prompt.value = '';
-    };
-
-    return {
-      conversations: store.conversations,
-      messages: store.messages,
-      addConversation,
-      addTag,
-      newTag,
-      prompt,
-      sendPrompt
-    };
+function sendPrompt() {
+  if (prompt.value.trim()) {
+    store.sendPrompt(prompt.value);
+    prompt.value = '';
   }
-};
+}
 </script>
-
-<style scoped>
-.q-pa-md {
-  padding: 16px;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-}
-
-.justify-center {
-  justify-content: center;
-}
-</style>

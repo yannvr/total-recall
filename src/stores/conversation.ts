@@ -1,30 +1,35 @@
+import { api } from 'app/boot/axios';
 import { defineStore } from 'pinia';
-import { api } from 'src/boot/axios';
 
 interface Tag {
   id: number;
   name: string;
 }
 
+interface Message {
+  id: number;
+  text: string;
+  name: string;
+  avatar: string;
+}
+
 interface Conversation {
   id: number;
   text: string;
   tags: Tag[];
+  messages: Message[];
 }
 
 export const useConversationsStore = defineStore('conversations', {
   state: () => ({
     conversations: [] as Conversation[],
-    messages: [] as {
-      id: number;
-      text: string;
-      name: string;
-      avatar: string;
-    }[],
+    selectedConversationId: null as number | null,
+    nextConversationId: 3, // Assuming you have 2 initial conversations
   }),
   actions: {
     addConversation(conversation: Conversation) {
       this.conversations.push(conversation);
+      console.log('Conversation added:', conversation);
     },
     addTag(conversationId: number, tag: Tag) {
       const conversation = this.conversations.find(
@@ -34,15 +39,42 @@ export const useConversationsStore = defineStore('conversations', {
         conversation.tags.push(tag);
       }
     },
+    selectConversation(conversationId: number) {
+      this.selectedConversationId = conversationId;
+    },
     async sendPrompt(prompt: string) {
-      // Add user's message to the chat
+      let conversation;
+      console.log('this.selectedConversationId', this.selectedConversationId)
+
+      if (this.selectedConversationId === null) {
+        // Create a new conversation if none is selected
+        conversation = {
+          id: this.nextConversationId++,
+          text: prompt,
+          tags: [],
+          messages: [],
+        };
+        this.addConversation(conversation);
+        this.selectedConversationId = conversation.id;
+      } else {
+        conversation = this.conversations.find(
+          (c) => c.id === this.selectedConversationId,
+        );
+
+        if (!conversation) {
+          console.error('Conversation not found');
+          return;
+        }
+      }
+
+      // Add user's message to the conversation
       const userMessage = {
         id: Date.now(),
         text: prompt,
         name: 'User',
         avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
       };
-      this.messages.push(userMessage);
+      conversation.messages.push(userMessage);
 
       // Mockup response from the server
       const mockResponse = {
@@ -71,7 +103,7 @@ export const useConversationsStore = defineStore('conversations', {
           name: 'Bot',
           avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
         };
-        this.messages.push(botMessage);
+        conversation.messages.push(botMessage);
       } catch (error) {
         console.error('Error sending prompt:', error);
       }
@@ -87,11 +119,13 @@ store.$patch({
       id: 1,
       text: 'Hello, how can I help you today?',
       tags: [{ id: 1, name: 'greeting' }],
+      messages: [],
     },
     {
       id: 2,
       text: 'Can you tell me more about your services?',
       tags: [{ id: 2, name: 'inquiry' }],
+      messages: [],
     },
   ],
 });
