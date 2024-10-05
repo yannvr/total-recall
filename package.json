@@ -1,8 +1,8 @@
 {
-  "name": "total-recall-02",
+  "name": "total-recall",
   "version": "0.0.1",
-  "description": "A Quasar Project",
-  "productName": "Quasar App",
+  "description": "Revolutionize your workflow with Total Recall: the ultimate AI-powered multithread engine tracker",
+  "productName": "Total Recall",
   "author": "Yann VR <yannvr@gmail.com>",
   "type": "module",
   "private": true,

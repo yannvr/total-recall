@@ -1,4 +1,4 @@
-# Quasar App (total-recall-02)
+# Quasar App (total-recall)
 
 A Quasar Project
 
