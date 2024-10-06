@@ -11,7 +11,7 @@
       :key="conversation.id"
       :class="{ 'selected-conversation': conversation.id === store.selectedConversationId }"
     >
-      <q-item-section @click="selectConversation(conversation.id, $event)">
+      <q-item-section @click="selectConversation(conversation.id)">
         <q-item-label>{{ conversation.text }}</q-item-label>
         <q-item-label caption>
           <TagEditor
@@ -46,17 +46,7 @@ const filteredConversations = computed(() => {
   });
 });
 
-function selectConversation(conversationId: number, event: MouseEvent) {
-  // if (event.target instanceof HTMLElement && event.target.closest('.tag-editor-chip')) {
-  //   // If the click event originated from a tag, do not select the conversation
-  //   const tagEditor = event.target.closest('.tag-editor-chip');
-  //   console.log('Clicked on tag editor:', tagEditor);
-  //   if (tagEditor) {
-  //     (tagEditor as HTMLElement).click();
-  //   }
-  //   return;
-  // }
-  console.log('Selected conversation:', conversationId);
+function selectConversation(conversationId: number) {
   store.selectConversation(conversationId);
 }
 </script>

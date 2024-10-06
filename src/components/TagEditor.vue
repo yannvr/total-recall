@@ -29,16 +29,14 @@ const isEditing = ref(false);
 const editableTagName = ref(props.tag.name);
 
 
-const handleClick = (event: Event) => {
+const handleClick = () => {
   if (!isEditing.value) {
-    startEditing(event);
+    startEditing();
   }
 };
 
-const startEditing = (event: Event) => {
-  console.log('Editing started for tag:', props.tag.name);
+const startEditing = () => {
   isEditing.value = true;
-  // event.stopPropagation(); // Ensure event propagation is stopped
 };
 
 const saveTag = () => {

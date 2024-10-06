@@ -54,6 +54,16 @@ export const useConversationsStore = defineStore('conversations', {
       this.selectedConversationId = conversationId;
       console.log('Selected conversation ID updated:', conversationId);
     },
+    createNewConversation() {
+      const newConversation: Conversation = {
+        id: this.nextConversationId++,
+        text: 'New Conversation',
+        tags: [],
+        messages: [],
+      };
+      this.addConversation(newConversation);
+      this.selectConversation(newConversation.id);
+    },
     async sendPrompt(prompt: string) {
       let conversation;
       console.log('this.selectedConversationId', this.selectedConversationId);
@@ -77,6 +87,11 @@ export const useConversationsStore = defineStore('conversations', {
           console.error('Conversation not found');
           return;
         }
+
+        // Update the conversation name to the first user prompt if it hasn't been set yet
+        if (conversation.text === 'New Conversation') {
+          conversation.text = prompt;
+        }
       }
 
       // Add user's message to the conversation
@@ -90,8 +105,7 @@ export const useConversationsStore = defineStore('conversations', {
 
       // Mockup response from the server
       const mockResponse = {
-        data:
-          'This is a mock response from the server.',
+        data: 'This is a mock response from the server.',
       };
 
       // Check environment variable
@@ -127,7 +141,6 @@ export const useConversationsStore = defineStore('conversations', {
 // Initialize store with mock conversations
 const store = useConversationsStore();
 store.$patch({
-
   conversations: [
     {
       id: 1,
@@ -157,12 +170,12 @@ store.$patch({
     },
     {
       id: 3,
-      text: 'Your time is limited, don’t waste it living someone else’s life.',
+      text: "Your time is limited, don't waste it living someone else's life.",
       tags: [{ id: 3, name: 'inspiration' }],
       messages: [
         {
           id: 3,
-          text: 'Your time is limited, don’t waste it living someone else’s life. - Steve Jobs',
+          text: "Your time is limited, don't waste it living someone else's life. - Steve Jobs",
           name: 'Bot',
           avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
         },
@@ -208,5 +221,4 @@ store.$patch({
       ],
     },
   ],
-
 });
