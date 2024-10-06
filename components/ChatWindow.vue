@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useConversationsStore } from 'stores/conversation';
 
 const store = useConversationsStore();
@@ -37,4 +37,9 @@ function sendPrompt() {
     prompt.value = '';
   }
 }
+
+  // Watch for changes in the selected conversation ID and update the messages
+  watch(() => store.selectedConversationId, (newId) => {
+    console.log('Selected conversation ID changed:', newId);
+  });
 </script>

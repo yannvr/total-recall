@@ -6,8 +6,8 @@
       </q-item-section>
     </q-item>
     <q-item-label header>Conversations</q-item-label>
-    <q-item v-for="conversation in filteredConversations" :key="conversation.id" @click="selectConversation(conversation.id)">
-      <q-item-section>
+    <q-item v-for="conversation in filteredConversations" :key="conversation.id">
+      <q-item-section @click="selectConversation(conversation.id)">
         <q-item-label>{{ conversation.text }}</q-item-label>
         <q-item-label caption>
           <q-chip v-for="tag in conversation.tags" :key="tag.id" :label="tag.name" :color="getTagColor(tag.name)"
@@ -45,6 +45,7 @@ function getTagColor(tagName: string): string {
 }
 
 function selectConversation(conversationId: number) {
+  console.log('Selected conversation:', conversationId);
   store.selectConversation(conversationId);
 }
 </script>
