@@ -6,11 +6,20 @@
       </q-item-section>
     </q-item>
     <q-item-label header>Conversations</q-item-label>
-    <q-item v-for="conversation in filteredConversations" :key="conversation.id" :class="{ 'selected-conversation': conversation.id === store.selectedConversationId }">
-      <q-item-section @click="selectConversation(conversation.id)">
+    <q-item
+      v-for="conversation in filteredConversations"
+      :key="conversation.id"
+      :class="{ 'selected-conversation': conversation.id === store.selectedConversationId }"
+    >
+      <q-item-section @click="selectConversation(conversation.id, $event)">
         <q-item-label>{{ conversation.text }}</q-item-label>
         <q-item-label caption>
-          <q-chip v-for="tag in conversation.tags" :key="tag.id" :label="tag.name" :color="getTagColor(tag.name)" class="q-mr-sm" />
+          <TagEditor
+            v-for="tag in conversation.tags"
+            :key="tag.id"
+            :conversationId="conversation.id"
+            :tag="tag"
+          />
         </q-item-label>
       </q-item-section>
     </q-item>
@@ -19,7 +28,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useConversationsStore } from 'stores/conversation';
+import { useConversationsStore } from 'src/stores/conversation';
+import TagEditor from 'components/TagEditor.vue';
 
 const store = useConversationsStore();
 const conversations = computed(() => store.conversations);
@@ -27,26 +37,25 @@ const searchQuery = ref('');
 
 const filteredConversations = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  return conversations.value.filter(conversation => {
+  return conversations.value.filter((conversation) => {
     // Include conversations without tags or with tags matching the search query
-    return conversation.tags.length === 0 || conversation.tags.some(tag => tag.name.toLowerCase().includes(query));
+    return (
+      conversation.tags.length === 0 ||
+      conversation.tags.some((tag) => tag.name.toLowerCase().includes(query))
+    );
   });
 });
 
-const tagColors: Record<string, string> = {
-  greeting: 'primary',
-  inquiry: 'secondary',
-  joke: 'orange',
-  nobel: 'blue',
-  inspiration: 'green',
-  // Add more tag colors as needed
-};
-
-function getTagColor(tagName: string): string {
-  return tagColors[tagName] || 'grey';
-}
-
-function selectConversation(conversationId: number) {
+function selectConversation(conversationId: number, event: MouseEvent) {
+  // if (event.target instanceof HTMLElement && event.target.closest('.tag-editor-chip')) {
+  //   // If the click event originated from a tag, do not select the conversation
+  //   const tagEditor = event.target.closest('.tag-editor-chip');
+  //   console.log('Clicked on tag editor:', tagEditor);
+  //   if (tagEditor) {
+  //     (tagEditor as HTMLElement).click();
+  //   }
+  //   return;
+  // }
   console.log('Selected conversation:', conversationId);
   store.selectConversation(conversationId);
 }

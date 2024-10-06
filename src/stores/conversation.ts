@@ -1,7 +1,7 @@
 import { api } from 'src/boot/axios';
 import { defineStore } from 'pinia';
 
-interface Tag {
+export interface Tag {
   id: number;
   name: string;
 }
@@ -37,6 +37,17 @@ export const useConversationsStore = defineStore('conversations', {
       );
       if (conversation) {
         conversation.tags.push(tag);
+      }
+    },
+    editTag(conversationId: number, tagId: number, newName: string) {
+      const conversation = this.conversations.find(
+        (c) => c.id === conversationId,
+      );
+      if (conversation) {
+        const tag = conversation.tags.find((t) => t.id === tagId);
+        if (tag) {
+          tag.name = newName;
+        }
       }
     },
     selectConversation(conversationId: number) {
