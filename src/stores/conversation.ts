@@ -24,7 +24,7 @@ export const useConversationsStore = defineStore('conversations', {
   state: () => ({
     conversations: [] as Conversation[],
     selectedConversationId: null as number | null,
-    nextConversationId: 3, // Assuming you have 2 initial conversations
+    nextConversationId: 7, // Updated to account for new conversations
   }),
   actions: {
     addConversation(conversation: Conversation) {
@@ -41,10 +41,11 @@ export const useConversationsStore = defineStore('conversations', {
     },
     selectConversation(conversationId: number) {
       this.selectedConversationId = conversationId;
+      console.log('Selected conversation ID updated:', conversationId);
     },
     async sendPrompt(prompt: string) {
       let conversation;
-      console.log('this.selectedConversationId', this.selectedConversationId)
+      console.log('this.selectedConversationId', this.selectedConversationId);
 
       if (this.selectedConversationId === null) {
         // Create a new conversation if none is selected
@@ -117,15 +118,81 @@ store.$patch({
   conversations: [
     {
       id: 1,
-      text: 'Hello, how can I help you today?',
-      tags: [{ id: 1, name: 'greeting' }],
-      messages: [],
+      text: 'The only way to do great work is to love what you do.',
+      tags: [{ id: 1, name: 'inspiration' }],
+      messages: [
+        {
+          id: 1,
+          text: 'The only way to do great work is to love what you do. - Steve Jobs',
+          name: 'Bot',
+          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
+        },
+      ],
     },
     {
       id: 2,
-      text: 'Can you tell me more about your services?',
-      tags: [{ id: 2, name: 'inquiry' }],
-      messages: [],
+      text: 'The best time to plant a tree was 20 years ago. The second best time is now.',
+      tags: [{ id: 2, name: 'inspiration' }],
+      messages: [
+        {
+          id: 2,
+          text: 'The best time to plant a tree was 20 years ago. The second best time is now. - Chinese Proverb',
+          name: 'Bot',
+          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
+        },
+      ],
+    },
+    {
+      id: 3,
+      text: 'Your time is limited, don’t waste it living someone else’s life.',
+      tags: [{ id: 3, name: 'inspiration' }],
+      messages: [
+        {
+          id: 3,
+          text: 'Your time is limited, don’t waste it living someone else’s life. - Steve Jobs',
+          name: 'Bot',
+          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
+        },
+      ],
+    },
+    {
+      id: 4,
+      text: 'Peace cannot be kept by force; it can only be achieved by understanding.',
+      tags: [{ id: 4, name: 'nobel' }],
+      messages: [
+        {
+          id: 4,
+          text: 'Peace cannot be kept by force; it can only be achieved by understanding. - Albert Einstein',
+          name: 'Bot',
+          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
+        },
+      ],
+    },
+    {
+      id: 5,
+      text: 'The best way to find yourself is to lose yourself in the service of others.',
+      tags: [{ id: 5, name: 'nobel' }],
+      messages: [
+        {
+          id: 5,
+          text: 'The best way to find yourself is to lose yourself in the service of others. - Mahatma Gandhi',
+          name: 'Bot',
+          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
+        },
+      ],
+    },
+    {
+      id: 6,
+      text: 'Education is the most powerful weapon which you can use to change the world.',
+      tags: [{ id: 6, name: 'nobel' }],
+      messages: [
+        {
+          id: 6,
+          text: 'Education is the most powerful weapon which you can use to change the world. - Nelson Mandela',
+          name: 'Bot',
+          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
+        },
+      ],
     },
   ],
 });

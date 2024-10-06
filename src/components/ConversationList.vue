@@ -6,12 +6,11 @@
       </q-item-section>
     </q-item>
     <q-item-label header>Conversations</q-item-label>
-    <q-item v-for="conversation in filteredConversations" :key="conversation.id">
+    <q-item v-for="conversation in filteredConversations" :key="conversation.id" :class="{ 'selected-conversation': conversation.id === store.selectedConversationId }">
       <q-item-section @click="selectConversation(conversation.id)">
         <q-item-label>{{ conversation.text }}</q-item-label>
         <q-item-label caption>
-          <q-chip v-for="tag in conversation.tags" :key="tag.id" :label="tag.name" :color="getTagColor(tag.name)"
-            class="q-mr-sm" />
+          <q-chip v-for="tag in conversation.tags" :key="tag.id" :label="tag.name" :color="getTagColor(tag.name)" class="q-mr-sm" />
         </q-item-label>
       </q-item-section>
     </q-item>
@@ -37,6 +36,9 @@ const filteredConversations = computed(() => {
 const tagColors: Record<string, string> = {
   greeting: 'primary',
   inquiry: 'secondary',
+  joke: 'orange',
+  nobel: 'blue',
+  inspiration: 'green',
   // Add more tag colors as needed
 };
 
@@ -49,3 +51,9 @@ function selectConversation(conversationId: number) {
   store.selectConversation(conversationId);
 }
 </script>
+
+<style scoped>
+.selected-conversation {
+  background-color: #e0f7fa; /* Light cyan background */
+}
+</style>

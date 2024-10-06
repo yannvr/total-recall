@@ -38,8 +38,13 @@ function sendPrompt() {
   }
 }
 
-  // Watch for changes in the selected conversation ID and update the messages
-  watch(() => store.selectedConversationId, (newId) => {
-    console.log('Selected conversation ID changed:', newId);
-  });
+// Watch for changes in the selected conversation ID and update the messages
+watch(() => store.selectedConversationId, (newId) => {
+  console.log('Selected conversation ID changed:', newId);
+});
+
+// Watch for changes in the messages
+watch(selectedConversationMessages, () => {
+  console.log('Messages updated');
+});
 </script>
