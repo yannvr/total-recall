@@ -1,4 +1,4 @@
-import { api } from 'app/boot/axios';
+import { api } from 'src/boot/axios';
 import { defineStore } from 'pinia';
 
 interface Tag {
@@ -69,7 +69,7 @@ export const useConversationsStore = defineStore('conversations', {
       }
 
       // Add user's message to the conversation
-      const userMessage = {
+      const userMessage: Message = {
         id: Date.now(),
         text: prompt,
         name: 'User',
@@ -79,13 +79,12 @@ export const useConversationsStore = defineStore('conversations', {
 
       // Mockup response from the server
       const mockResponse = {
-        data: {
-          reply: 'This is a mock response from the server.',
-        },
+        data:
+          'This is a mock response from the server.',
       };
 
       // Check environment variable
-      console.log('isMockApi:', import.meta.env);
+      console.log('isMockApi:', import.meta.env.VITE_MOCK_API);
       const isMockApi = import.meta.env.VITE_MOCK_API === '1';
 
       try {
@@ -94,13 +93,15 @@ export const useConversationsStore = defineStore('conversations', {
           response = mockResponse;
         } else {
           response = await api.post('/sendPrompt', {
+            conversationId: conversation.id,
             prompt,
             provider: 'anthropic',
           });
+          console.log('response:', response);
         }
-        const botMessage = {
+        const botMessage: Message = {
           id: Date.now() + 1,
-          text: response.data.reply,
+          text: response.data,
           name: 'Bot',
           avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
         };
@@ -115,6 +116,7 @@ export const useConversationsStore = defineStore('conversations', {
 // Initialize store with mock conversations
 const store = useConversationsStore();
 store.$patch({
+
   conversations: [
     {
       id: 1,
@@ -195,4 +197,5 @@ store.$patch({
       ],
     },
   ],
+
 });

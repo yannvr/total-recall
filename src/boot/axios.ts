@@ -8,15 +8,12 @@ declare module 'vue' {
   }
 }
 
-// Be careful when using SSR for cross-request state pollution
-// due to creating a Singleton instance here;
-// If any client changes this (global) instance, it might be a
-// good idea to move this instance creation inside of the
-// "export default () => {}" function below (which runs individually
-// for each client)
+// Determine the baseURL based on the environment variable
+const isMockApi = import.meta.env.VITE_MOCK_API === '1';
+const baseURL = isMockApi ? 'https://dreamcatcher.run/api' : 'http://localhost:3000/api';
+
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
-  // baseURL: 'https://dreamcatcher.run/api',
+  baseURL: baseURL,
   headers: {
     'x-api-key': '0x1eb4aC0CD307aB4c7dB6c25a78029E035670ac95',
   },
