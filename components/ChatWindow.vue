@@ -61,6 +61,8 @@ watch(selectedConversationMessages, () => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 100%;
+  align-self: baseline;
 }
 
 .message-list {
@@ -72,7 +74,7 @@ watch(selectedConversationMessages, () => {
   display: flex;
   align-items: center;
   padding: 8px;
-  border-top: 1px solid #e0e0e0;
+  width: 100%;
 }
 
 .prompt-input {
