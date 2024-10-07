@@ -1,1 +1,78 @@
 // app global css in SCSS form
+// src/css/app.scss
+
+body {
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+body.body--dark {
+  background-color: #121212;
+  color: #ffffff;
+
+  .q-header {
+    background-color: #1e1e1e;
+  }
+
+  .q-drawer {
+    background-color: #1e1e1e;
+    color: #ffffff;
+  }
+
+  .q-item {
+    color: #ffffff;
+  }
+
+  .q-card {
+    background-color: #2c2c2c;
+    color: #ffffff;
+  }
+
+  .q-input {
+    color: #ffffff;
+  }
+
+  .q-chip {
+    color: #ffffff;
+  }
+
+  .q-btn {
+    color: #ffffff;
+  }
+}
+
+body.body--light {
+  background-color: #ffffff;
+  color: #000000;
+
+  .q-header {
+    background-color: #f5f5f5;
+  }
+
+  .q-drawer {
+    background-color: #f5f5f5;
+    color: #000000;
+  }
+
+  .q-item {
+    color: #000000;
+  }
+
+  .q-card {
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  .q-input {
+    color: #000000;
+  }
+
+  .q-chip {
+    color: #000000;
+  }
+
+  .q-btn {
+    color: #000000;
+  }
+}

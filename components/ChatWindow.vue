@@ -63,6 +63,8 @@ watch(selectedConversationMessages, () => {
   height: 100%;
   width: 100%;
   align-self: baseline;
+  background-color: var(--q-color-page);
+  color: var(--q-color-text);
 }
 
 .message-list {

@@ -24,10 +24,8 @@ import { Tag } from 'src/stores/conversation';
 
 const props = defineProps<{ conversationId: number; tag: Tag }>();
 const store = useConversationsStore();
-
 const isEditing = ref(false);
 const editableTagName = ref(props.tag.name);
-
 
 const handleClick = () => {
   if (!isEditing.value) {
@@ -59,3 +57,10 @@ function getTagColor(tagName: string): string {
   return tagColors[tagName] || 'grey';
 }
 </script>
+
+<style scoped>
+.tag-editor-chip {
+  background-color: var(--q-color-accent);
+  color: var(--q-color-text);
+}
+</style>
