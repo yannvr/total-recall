@@ -15,7 +15,7 @@ interface Message {
 
 interface Conversation {
   id: number;
-  text: string;
+  name: string;
   tags: Tag[];
   messages: Message[];
 }
@@ -57,7 +57,7 @@ export const useConversationsStore = defineStore('conversations', {
     createNewConversation() {
       const newConversation: Conversation = {
         id: this.nextConversationId++,
-        text: 'New Conversation',
+        name: 'New Conversation',
         tags: [],
         messages: [],
       };
@@ -65,17 +65,15 @@ export const useConversationsStore = defineStore('conversations', {
       this.selectConversation(newConversation.id);
     },
     async sendPrompt(prompt: string) {
-      let conversation;
-      console.log('this.selectedConversationId', this.selectedConversationId);
+      let conversation = {
+        id: this.nextConversationId++,
+        name: prompt.split(' ')[0],
+        tags: [],
+        messages: [],
+      };
 
       if (this.selectedConversationId === null) {
         // Create a new conversation if none is selected
-        conversation = {
-          id: this.nextConversationId++,
-          text: prompt,
-          tags: [],
-          messages: [],
-        };
         this.addConversation(conversation);
         this.selectedConversationId = conversation.id;
       } else {
@@ -84,13 +82,12 @@ export const useConversationsStore = defineStore('conversations', {
         );
 
         if (!conversation) {
-          console.error('Conversation not found');
-          return;
+          console.warn('Conversation not found');
         }
 
         // Update the conversation name to the first user prompt if it hasn't been set yet
-        if (conversation.text === 'New Conversation') {
-          conversation.text = prompt;
+        if (conversation.name === 'New Conversation') {
+          conversation.name = prompt;
         }
       }
 
@@ -144,7 +141,7 @@ store.$patch({
   conversations: [
     {
       id: 1,
-      text: 'The only way to do great work is to love what you do.',
+      name: 'The only way to do great work is to love what you do.',
       tags: [{ id: 1, name: 'inspiration' }],
       messages: [
         {
@@ -157,7 +154,7 @@ store.$patch({
     },
     {
       id: 2,
-      text: 'The best time to plant a tree was 20 years ago. The second best time is now.',
+      name: 'The best time to plant a tree was 20 years ago. The second best time is now.',
       tags: [{ id: 2, name: 'inspiration' }],
       messages: [
         {
@@ -170,7 +167,7 @@ store.$patch({
     },
     {
       id: 3,
-      text: "Your time is limited, don't waste it living someone else's life.",
+      name: "Your time is limited, don't waste it living someone else's life.",
       tags: [{ id: 3, name: 'inspiration' }],
       messages: [
         {
@@ -183,7 +180,7 @@ store.$patch({
     },
     {
       id: 4,
-      text: 'Peace cannot be kept by force; it can only be achieved by understanding.',
+      name: 'Peace cannot be kept by force; it can only be achieved by understanding.',
       tags: [{ id: 4, name: 'nobel' }],
       messages: [
         {
@@ -196,7 +193,7 @@ store.$patch({
     },
     {
       id: 5,
-      text: 'The best way to find yourself is to lose yourself in the service of others.',
+      name: 'The best way to find yourself is to lose yourself in the service of others.',
       tags: [{ id: 5, name: 'nobel' }],
       messages: [
         {
@@ -209,7 +206,7 @@ store.$patch({
     },
     {
       id: 6,
-      text: 'Education is the most powerful weapon which you can use to change the world.',
+      name: 'Education is the most powerful weapon which you can use to change the world.',
       tags: [{ id: 6, name: 'nobel' }],
       messages: [
         {

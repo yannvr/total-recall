@@ -12,7 +12,7 @@
       :class="{ 'selected-conversation': conversation.id === store.selectedConversationId }"
     >
       <q-item-section @click="selectConversation(conversation.id)">
-        <q-item-label>{{ conversation.text }}</q-item-label>
+        <q-item-label>{{ conversation.name }}</q-item-label>
         <q-item-label caption>
           <TagEditor
             v-for="tag in conversation.tags"

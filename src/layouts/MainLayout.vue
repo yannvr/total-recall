@@ -3,14 +3,14 @@
     <q-header elevated class="bg-primary text-white">
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-        <q-toolbar-title>Total Recall</q-toolbar-title>
-        <q-btn
-          flat
-          round
-          dense
-          :icon="isDark ? 'light_mode' : 'dark_mode'"
-          @click="toggleDarkMode"
-        />
+        <q-toolbar-title class="toolbar-title">Total Recall</q-toolbar-title>
+        <div class="toolbar-content">
+          <q-btn flat dense round @click="startNewConversation">
+            <q-icon name="add" />
+            <span class="q-ml-sm">New Conversation</span>
+          </q-btn>
+          <q-btn flat round dense :icon="isDark ? 'light_mode' : 'dark_mode'" @click="toggleDarkMode" />
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -59,8 +59,10 @@ import { useQuasar } from 'quasar';
 import ConversationList from 'src/components/ConversationList.vue';
 // import ThemeSettings from 'src/components/ThemeSettings.vue';
 import { useThemeStore } from 'src/stores/theme';
+import { useConversationsStore } from 'src/stores/conversation';
 
 const $q = useQuasar();
+const store = useConversationsStore();
 const themeStore = useThemeStore();
 const leftDrawerOpen = ref(false);
 const settingsModalOpen = ref(false);
@@ -72,6 +74,14 @@ const aiEngines = ref([
 ]);
 
 const isDark = ref($q.dark.isActive);
+
+
+function startNewConversation() {
+  // Logic to start a new conversation
+  console.log('Starting a new conversation...');
+  // You can add more logic here to actually start a new conversation
+  store.createNewConversation();
+}
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -98,5 +108,17 @@ function toggleDarkMode() {
   position: absolute;
   bottom: 0;
   width: 100%;
+}
+.toolbar-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.toolbar-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Adjust the gap as needed */
 }
 </style>
