@@ -1,11 +1,6 @@
 import { api } from 'src/boot/axios';
 import { defineStore } from 'pinia';
 
-export interface Tag {
-  id: number;
-  name: string;
-}
-
 interface Message {
   id: number;
   text: string;
@@ -16,7 +11,7 @@ interface Message {
 interface Conversation {
   id: number;
   name: string;
-  tags: Tag[];
+  tags: string[];
   messages: Message[];
 }
 
@@ -31,7 +26,7 @@ export const useConversationsStore = defineStore('conversations', {
       this.conversations.push(conversation);
       console.log('Conversation added:', conversation);
     },
-    addTag(conversationId: number, tag: Tag) {
+    addTag(conversationId: number, tag: string) {
       const conversation = this.conversations.find(
         (c) => c.id === conversationId,
       );
@@ -39,14 +34,14 @@ export const useConversationsStore = defineStore('conversations', {
         conversation.tags.push(tag);
       }
     },
-    editTag(conversationId: number, tagId: number, newName: string) {
+    editTag(conversationId: number, oldTag: string, newTag: string) {
       const conversation = this.conversations.find(
         (c) => c.id === conversationId,
       );
       if (conversation) {
-        const tag = conversation.tags.find((t) => t.id === tagId);
-        if (tag) {
-          tag.name = newName;
+        const tagIndex = conversation.tags.indexOf(oldTag);
+        if (tagIndex !== -1) {
+          conversation.tags[tagIndex] = newTag;
         }
       }
     },
@@ -142,7 +137,7 @@ store.$patch({
     {
       id: 1,
       name: 'The only way to do great work is to love what you do.',
-      tags: [{ id: 1, name: 'inspiration' }],
+      tags: ['inspiration'],
       messages: [
         {
           id: 1,
@@ -155,7 +150,7 @@ store.$patch({
     {
       id: 2,
       name: 'The best time to plant a tree was 20 years ago. The second best time is now.',
-      tags: [{ id: 2, name: 'inspiration' }],
+      tags: ['inspiration'],
       messages: [
         {
           id: 2,
@@ -168,7 +163,7 @@ store.$patch({
     {
       id: 3,
       name: "Your time is limited, don't waste it living someone else's life.",
-      tags: [{ id: 3, name: 'inspiration' }],
+      tags: ['inspiration'],
       messages: [
         {
           id: 3,
@@ -181,7 +176,7 @@ store.$patch({
     {
       id: 4,
       name: 'Peace cannot be kept by force; it can only be achieved by understanding.',
-      tags: [{ id: 4, name: 'nobel' }],
+      tags: ['nobel'],
       messages: [
         {
           id: 4,
@@ -194,7 +189,7 @@ store.$patch({
     {
       id: 5,
       name: 'The best way to find yourself is to lose yourself in the service of others.',
-      tags: [{ id: 5, name: 'nobel' }],
+      tags: ['nobel'],
       messages: [
         {
           id: 5,
@@ -207,7 +202,7 @@ store.$patch({
     {
       id: 6,
       name: 'Education is the most powerful weapon which you can use to change the world.',
-      tags: [{ id: 6, name: 'nobel' }],
+      tags: ['nobel'],
       messages: [
         {
           id: 6,

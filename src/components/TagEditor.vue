@@ -2,8 +2,8 @@
   <div @click="handleClick">
     <q-chip
       v-if="!isEditing"
-      :label="tag.name"
-      :color="getTagColor(tag.name)"
+      :label="tag"
+      :color="getTagColor(tag)"
       class="q-mr-sm tag-editor-chip"
     />
     <q-input
@@ -18,32 +18,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useConversationsStore } from 'src/stores/conversation';
-import { Tag } from 'src/stores/conversation';
-
-const props = defineProps<{ conversationId: number; tag: Tag }>();
+const props = defineProps<{ conversationId: number; tag: string }>();
 const store = useConversationsStore();
 const isEditing = ref(false);
-const editableTagName = ref(props.tag.name);
-
+const editableTagName = ref(props.tag);
 const handleClick = () => {
   if (!isEditing.value) {
     startEditing();
   }
 };
-
 const startEditing = () => {
   isEditing.value = true;
 };
-
 const saveTag = () => {
   if (editableTagName.value.trim()) {
-    store.editTag(props.conversationId, props.tag.id, editableTagName.value);
+    if (props.tag === 'tag?') {
+      // Add the new tag and remove the placeholder
+      store.addTag(props.conversationId, editableTagName.value);
+    } else {
+      store.editTag(props.conversationId, props.tag, editableTagName.value);
+    }
   }
   isEditing.value = false;
 };
-
+// Watch for changes in the tag name and update the editableTagName accordingly
+watch(() => props.tag, (newName) => {
+  editableTagName.value = newName;
+});
 const tagColors: Record<string, string> = {
   greeting: 'primary',
   inquiry: 'secondary',
@@ -52,7 +55,6 @@ const tagColors: Record<string, string> = {
   inspiration: 'green',
   // Add more tag colors as needed
 };
-
 function getTagColor(tagName: string): string {
   return tagColors[tagName] || 'grey';
 }
@@ -60,7 +62,6 @@ function getTagColor(tagName: string): string {
 
 <style scoped>
 .tag-editor-chip {
-  background-color: var(--q-color-accent);
-  color: var(--q-color-text);
+  cursor: pointer;
 }
 </style>
