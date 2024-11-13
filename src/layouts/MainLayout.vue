@@ -14,8 +14,11 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <conversation-list />
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered :width="drawerWidth">
+      <div class="resizable-drawer">
+        <conversation-list />
+        <div class="drawer-resize-handle" @mousedown="startResize"></div>
+      </div>
       <div class="drawer-bottom">
         <q-item clickable @click="openSettingsModal">
           <q-item-section avatar>
@@ -95,6 +98,26 @@ function saveSettings() {
 function toggleDarkMode() {
   $q.dark.toggle();
 }
+
+const drawerWidth = ref(300); // Initial width of the drawer
+
+function startResize(event) {
+  const startX = event.clientX;
+  const startWidth = drawerWidth.value;
+
+  function onMouseMove(e) {
+    const newWidth = startWidth + (e.clientX - startX);
+    drawerWidth.value = Math.max(200, newWidth); // Minimum width of 200px
+  }
+
+  function onMouseUp() {
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  }
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+}
 </script>
 
 <style scoped>
@@ -112,5 +135,18 @@ function toggleDarkMode() {
 .toolbar-content {
   display: flex;
   align-items: center;
+}
+.resizable-drawer {
+  position: relative;
+  height: 100%;
+}
+.drawer-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: ew-resize;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 </style>
