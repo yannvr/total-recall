@@ -1,15 +1,19 @@
 <template>
   <div class="chat-window">
     <q-list v-if="selectedConversationMessages.length" class="message-list">
-      <q-item v-for="message in selectedConversationMessages" :key="message.id">
+      <q-item
+        v-for="message in selectedConversationMessages"
+        :key="message.conversationId"
+        :class="message.role === 'assistant' ? 'assistant-message' : 'user-message'"
+      >
         <q-item-section avatar>
-          <q-avatar>
+          <!-- <q-avatar>
             <img :src="message.avatar" />
-          </q-avatar>
+          </q-avatar> -->
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ message.name }}</q-item-label>
-          <q-item-label caption>{{ message.text }}</q-item-label>
+          <!-- <q-item-label>{{ message.role }}</q-item-label> -->
+          <q-item-label caption>{{ message.content }}</q-item-label>
         </q-item-section>
       </q-item>
     </q-list>
@@ -21,22 +25,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
 import { useConversationsStore } from 'stores/conversation';
+import { computed, ref, toRaw } from 'vue';
 
 const store = useConversationsStore();
 const prompt = ref('');
 
 const selectedConversationMessages = computed(() => {
   const conversation = store.conversations.find(
-    (c) => c.id === store.selectedConversationId,
+    (c) => c.conversationId === store.selectedConversationId
   );
+  console.log('conversation selected', toRaw(conversation));
+  console.log('conversation message selected', toRaw(conversation?.messages));
   return conversation ? conversation.messages : [];
 });
 
 function sendPrompt() {
   if (prompt.value.trim()) {
-    store.sendPrompt(prompt.value);
+    store.sendMessage(prompt.value);
     prompt.value = '';
   }
 }
@@ -44,16 +50,6 @@ function sendPrompt() {
 function createNewConversation() {
   store.createNewConversation();
 }
-
-// Watch for changes in the selected conversation ID and update the messages
-watch(() => store.selectedConversationId, (newId) => {
-  console.log('Selected conversation ID changed:', newId);
-});
-
-// Watch for changes in the messages
-watch(selectedConversationMessages, () => {
-  console.log('Messages updated');
-});
 </script>
 
 <style scoped>
@@ -62,25 +58,40 @@ watch(selectedConversationMessages, () => {
   flex-direction: column;
   height: 100%;
   width: 100%;
-  align-self: baseline;
-  background-color: var(--q-color-page);
-  color: var(--q-color-text);
 }
 
 .message-list {
-  flex-grow: 1;
+  flex: 1;
   overflow-y: auto;
 }
 
 .prompt-container {
   display: flex;
   align-items: center;
-  padding: 8px;
-  width: 100%;
+  padding: 10px;
+  border-top: 1px solid #ccc;
 }
 
 .prompt-input {
-  flex-grow: 1;
-  margin-left: 8px;
+  flex: 1;
+  margin-left: 10px;
+}
+
+.user-message {
+  background-color: var(--q-color-primary);
+  color: var(--q-color-primary-contrast);
+  border-radius: 10px;
+  padding: 10px;
+  margin: 5px 0;
+  align-self: flex-start;
+}
+
+.assistant-message {
+  background-color: var(--q-color-secondary);
+  color: var(--q-color-secondary-contrast);
+  border-radius: 10px;
+  padding: 10px;
+  margin: 5px 0;
+  align-self: flex-end;
 }
 </style>

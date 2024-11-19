@@ -10,7 +10,7 @@ declare module 'vue' {
 
 // Determine the baseURL based on the environment variable
 const isMockApi = import.meta.env.VITE_MOCK_API === '1';
-const baseURL = isMockApi ? 'https://dreamcatcher.run/api' : 'http://localhost:3000/api';
+const baseURL = isMockApi ? 'https://dreamcatcher.run/api' : 'http://localhost:3010';
 
 const api = axios.create({
   baseURL: baseURL,

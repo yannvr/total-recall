@@ -1,15 +1,15 @@
 import { api } from 'src/boot/axios';
 import { defineStore } from 'pinia';
+import { toRaw } from 'vue';
 
 interface Message {
-  id: number;
   text: string;
-  name: string;
+  role: string;
   avatar: string;
 }
 
 interface Conversation {
-  id: number;
+  conversationId: string;
   name: string;
   tags: string[];
   messages: Message[];
@@ -22,30 +22,78 @@ export const useConversationsStore = defineStore('conversations', {
     nextConversationId: 7, // Updated to account for new conversations
   }),
   actions: {
+    async init() {
+      try {
+        const response = await api.get('/conversations');
+        this.conversations = response.data;
+        console.log('Conversations fetched:', toRaw(this.conversations));
+      } catch (error) {
+        console.error('Error fetching conversations:', error);
+      }
+    },
     addConversation(conversation: Conversation) {
       this.conversations.push(conversation);
       console.log('Conversation added:', conversation);
     },
-    addTag(conversationId: number, tag: string) {
+    async addTag(conversationId: string, tag: string) {
       const conversation = this.conversations.find(
-        (c) => c.id === conversationId,
+        (c) => c.conversationId === conversationId,
       );
       if (conversation) {
         conversation.tags.push(tag);
+        try {
+          await api.put('/tag', {
+            conversationId,
+            oldTag: null,
+            newTag: tag,
+          });
+        } catch (error) {
+          console.error('Error adding tag:', error);
+        }
       }
     },
-    editTag(conversationId: number, oldTag: string, newTag: string) {
+    async editTag(conversationId: string, oldTag: string, newTag: string) {
       const conversation = this.conversations.find(
-        (c) => c.id === conversationId,
+        (c) => c.conversationId === conversationId,
       );
       if (conversation) {
         const tagIndex = conversation.tags.indexOf(oldTag);
         if (tagIndex !== -1) {
           conversation.tags[tagIndex] = newTag;
+          try {
+            await api.put('/tag', {
+              conversationId,
+              oldTag,
+              newTag,
+            });
+          } catch (error) {
+            console.error('Error editing tag:', error);
+          }
         }
       }
     },
-    selectConversation(conversationId: number) {
+    async removeTag(conversationId: string, tag: string) {
+      const conversation = this.conversations.find(
+        (c) => c.conversationId === conversationId,
+      );
+      if (conversation) {
+        const tagIndex = conversation.tags.indexOf(tag);
+        if (tagIndex !== -1) {
+          conversation.tags.splice(tagIndex, 1);
+          try {
+            await api.delete('/tag', {
+              data: {
+                conversationId,
+                tag,
+              },
+            });
+          } catch (error) {
+            console.error('Error deleting tag:', error);
+          }
+        }
+      }
+    },
+    selectConversation(conversationId: string) {
       this.selectedConversationId = conversationId;
       console.log('Selected conversation ID updated:', conversationId);
     },
@@ -57,7 +105,7 @@ export const useConversationsStore = defineStore('conversations', {
         messages: [],
       };
       this.addConversation(newConversation);
-      this.selectConversation(newConversation.id);
+      this.selectConversation(newconversation.conversationId);
     },
     async sendPrompt(prompt: string) {
       let conversation = {
@@ -70,19 +118,16 @@ export const useConversationsStore = defineStore('conversations', {
       if (this.selectedConversationId === null) {
         // Create a new conversation if none is selected
         this.addConversation(conversation);
-        this.selectedConversationId = conversation.id;
+        this.selectedConversationId = conversation.conversationId;
       } else {
-        conversation = this.conversations.find(
-          (c) => c.id === this.selectedConversationId,
+        const existingConversation = this.conversations.find(
+          (c) => c.conversationId === this.selectedConversationId,
         );
 
-        if (!conversation) {
-          console.warn('Conversation not found');
-        }
-
-        // Update the conversation name to the first user prompt if it hasn't been set yet
-        if (conversation.name === 'New Conversation') {
-          conversation.name = prompt;
+        if (!existingConversation) {
+          console.warn('Conversation not found', this.selectedConversationId);
+        } else {
+          conversation = existingConversation;
         }
       }
 
@@ -90,15 +135,10 @@ export const useConversationsStore = defineStore('conversations', {
       const userMessage: Message = {
         id: Date.now(),
         text: prompt,
-        name: 'User',
+        role: 'user',
         avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
       };
       conversation.messages.push(userMessage);
-
-      // Mockup response from the server
-      const mockResponse = {
-        data: 'This is a mock response from the server.',
-      };
 
       // Check environment variable
       console.log('isMockApi:', import.meta.env.VITE_MOCK_API);
@@ -106,111 +146,27 @@ export const useConversationsStore = defineStore('conversations', {
 
       try {
         let response;
+        // Mockup response from the server
         if (isMockApi) {
-          response = mockResponse;
+          response = {
+            data: 'This is a mock response from the server.',
+          };
         } else {
-          response = await api.post('/sendPrompt', {
-            conversationId: conversation.id,
+          response = await api.post('/conversation', {
+            conversationId: this.selectedConversationId,
             prompt,
             provider: 'anthropic',
           });
           console.log('response:', response);
         }
-        const botMessage: Message = {
-          id: Date.now() + 1,
-          text: response.data,
-          name: 'Bot',
-          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
-        };
-        conversation.messages.push(botMessage);
+        conversation.messages.push(response.data.messages.slice(-1)[0]);
       } catch (error) {
-        console.error('Error sending prompt:', error);
+        console.error('Error sending query:', error);
       }
     },
   },
 });
 
-// Initialize store with mock conversations
+// Initialize store and fetch conversations
 const store = useConversationsStore();
-store.$patch({
-  conversations: [
-    {
-      id: 1,
-      name: 'The only way to do great work is to love what you do.',
-      tags: ['inspiration'],
-      messages: [
-        {
-          id: 1,
-          text: 'The only way to do great work is to love what you do. - Steve Jobs',
-          name: 'Bot',
-          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: 'The best time to plant a tree was 20 years ago. The second best time is now.',
-      tags: ['inspiration'],
-      messages: [
-        {
-          id: 2,
-          text: 'The best time to plant a tree was 20 years ago. The second best time is now. - Chinese Proverb',
-          name: 'Bot',
-          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Your time is limited, don't waste it living someone else's life.",
-      tags: ['inspiration'],
-      messages: [
-        {
-          id: 3,
-          text: "Your time is limited, don't waste it living someone else's life. - Steve Jobs",
-          name: 'Bot',
-          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
-        },
-      ],
-    },
-    {
-      id: 4,
-      name: 'Peace cannot be kept by force; it can only be achieved by understanding.',
-      tags: ['nobel'],
-      messages: [
-        {
-          id: 4,
-          text: 'Peace cannot be kept by force; it can only be achieved by understanding. - Albert Einstein',
-          name: 'Bot',
-          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
-        },
-      ],
-    },
-    {
-      id: 5,
-      name: 'The best way to find yourself is to lose yourself in the service of others.',
-      tags: ['nobel'],
-      messages: [
-        {
-          id: 5,
-          text: 'The best way to find yourself is to lose yourself in the service of others. - Mahatma Gandhi',
-          name: 'Bot',
-          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
-        },
-      ],
-    },
-    {
-      id: 6,
-      name: 'Education is the most powerful weapon which you can use to change the world.',
-      tags: ['nobel'],
-      messages: [
-        {
-          id: 6,
-          text: 'Education is the most powerful weapon which you can use to change the world. - Nelson Mandela',
-          name: 'Bot',
-          avatar: 'https://cdn.quasar.dev/img/avatar1.jpg',
-        },
-      ],
-    },
-  ],
-});
+store.init();

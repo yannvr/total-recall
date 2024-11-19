@@ -6,13 +6,16 @@
       </q-item-section>
     </q-item>
     <q-item-label header>Conversations</q-item-label>
-    <q-item v-for="conversation in filteredConversations" :key="conversation.id"
-      :class="{ 'selected-conversation': conversation.id === store.selectedConversationId }">
-      <q-item-section @click="selectConversation(conversation.id)">
-        <q-item-label>{{ conversation.name }}</q-item-label>
+    <!-- <span v-for="conversation in conversations" :key="conversation.conversationId">
+      {{ conversation.name || "unamed" }} - Tags: {{ conversation.tags.join(', ') }}
+    </span> -->
+    <q-item v-for="conversation in filteredConversations" :key="conversation.conversationId"
+      :class="{ 'selected-conversation': conversation.conversationId === store.selectedConversationId }">
+      <q-item-section @click="selectConversation(conversation.conversationId)">
+        <q-item-label>{{ conversation.name || "unamed" }}</q-item-label>
         <q-item-label caption>
-          <TagEditor v-for="tag in getTags(conversation)" :key="tag" :conversationId="conversation.id" :tag="tag"
-            :isEditing="tag === 'tag?'" />
+          <TagEditor v-for="tag in getTags(conversation)" :key="tag" :conversationId="conversation.conversationId" :tag="tag"
+             />
         </q-item-label>
       </q-item-section>
     </q-item>
@@ -20,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, toRaw } from 'vue';
 import { useConversationsStore } from 'src/stores/conversation';
 import TagEditor from 'components/TagEditor.vue';
 
@@ -29,7 +32,12 @@ const conversations = computed(() => store.conversations);
 const searchQuery = ref('');
 const filteredConversations = computed(() => {
   const query = searchQuery.value.toLowerCase();
+  console.log('conversations', toRaw(conversations.value));
+  if(!query) {
+    return conversations.value;
+  }
   return conversations.value.filter((conversation) => {
+    console.log('conversation', conversation);
     // Include conversations without tags or with tags matching the search query
     return (
       conversation.tags.length === 0 ||
@@ -37,7 +45,7 @@ const filteredConversations = computed(() => {
     );
   });
 });
-function selectConversation(conversationId: number) {
+function selectConversation(conversationId: string) {
   store.selectConversation(conversationId);
 }
 function getTags(conversation: { tags: string }) {
