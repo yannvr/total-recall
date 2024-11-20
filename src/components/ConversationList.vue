@@ -12,6 +12,10 @@
     <q-item v-for="conversation in filteredConversations" :key="conversation.conversationId"
       :class="{ 'selected-conversation': conversation.conversationId === store.selectedConversationId }">
       <q-item-section @click="selectConversation(conversation.conversationId)">
+        <ConversationNameEditor
+          :conversationId="conversation.conversationId"
+          :conversationName="conversation.name"
+        />
         <q-item-label>{{ conversation.name || "unamed" }}</q-item-label>
         <q-item-label caption>
           <TagEditor v-for="tag in getTags(conversation)" :key="tag" :conversationId="conversation.conversationId" :tag="tag"
@@ -26,6 +30,7 @@
 import { computed, ref, toRaw } from 'vue';
 import { useConversationsStore } from 'src/stores/conversation';
 import TagEditor from 'components/TagEditor.vue';
+import ConversationNameEditor from './ConversationNameEditor.vue';
 
 const store = useConversationsStore();
 const conversations = computed(() => store.conversations);

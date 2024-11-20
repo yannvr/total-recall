@@ -35,6 +35,23 @@ export const useConversationsStore = defineStore('conversations', {
       this.conversations.push(conversation);
       console.log('Conversation added:', conversation);
     },
+    async editConversationName(conversationId: string, newName: string) {
+      console.log('Editing conversation name:', conversationId, newName);
+      const conversation = this.conversations.find(
+        (c) => c.conversationId === conversationId,
+      );
+      if (conversation) {
+        conversation.name = newName;
+        try {
+          await api.put('/conversation/name', {
+            conversationId,
+            newName,
+          });
+        } catch (error) {
+          console.error('Error editing conversation name:', error);
+        }
+      }
+    },
     async addTag(conversationId: string, tag: string) {
       const conversation = this.conversations.find(
         (c) => c.conversationId === conversationId,
