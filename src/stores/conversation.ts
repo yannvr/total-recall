@@ -42,10 +42,9 @@ export const useConversationsStore = defineStore('conversations', {
       if (conversation) {
         conversation.tags.push(tag);
         try {
-          await api.put('/tag', {
+          await api.post('/tag', {
             conversationId,
-            oldTag: null,
-            newTag: tag,
+            tag,
           });
         } catch (error) {
           console.error('Error adding tag:', error);

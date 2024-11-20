@@ -9,7 +9,7 @@
       @mouseleave="showDeleteIcon = false"
     >
       <q-icon
-        v-if="showDeleteIcon"
+        v-if="showDeleteIcon && tag !== 'tag?'"
         name="delete"
         class="delete-icon"
         @click.stop="deleteTag"
@@ -18,6 +18,7 @@
     <q-input
       v-else
       v-model="editableTagName"
+      title="edit tag"
       @blur="saveTag"
       @keyup.enter="saveTag"
       dense
@@ -52,7 +53,11 @@ const saveTag = async () => {
       // Add the new tag and remove the placeholder
       await store.addTag(props.conversationId, editableTagName.value);
     } else {
-      await store.editTag(props.conversationId, props.tag, editableTagName.value);
+      await store.editTag(
+        props.conversationId,
+        props.tag,
+        editableTagName.value,
+      );
     }
   }
   isEditing.value = false;
@@ -63,9 +68,12 @@ const deleteTag = async () => {
 };
 
 // Watch for changes in the tag name and update the editableTagName accordingly
-watch(() => props.tag, (newName) => {
-  editableTagName.value = newName;
-});
+watch(
+  () => props.tag,
+  (newName) => {
+    editableTagName.value = newName;
+  },
+);
 
 const tagColors: Record<string, string> = {
   greeting: 'primary',
