@@ -37,15 +37,14 @@ const conversations = computed(() => store.conversations);
 const searchQuery = ref('');
 const filteredConversations = computed(() => {
   const query = searchQuery.value.toLowerCase();
-  console.log('conversations', toRaw(conversations.value));
+  // console.log('conversations', toRaw(conversations.value));
   if(!query) {
     return conversations.value;
   }
   return conversations.value.filter((conversation) => {
-    console.log('conversation', conversation);
+    console.log('conversation.tags', toRaw(conversation.tags));
     // Include conversations without tags or with tags matching the search query
     return (
-      conversation.tags.length === 0 ||
       conversation.tags.some((tag) => tag.toLowerCase().includes(query))
     );
   });

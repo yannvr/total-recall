@@ -59,7 +59,7 @@ export const useConversationsStore = defineStore('conversations', {
       if (conversation) {
         conversation.tags.push(tag);
         try {
-          await api.post('/tag', {
+          await api.post('/conversation/tag', {
             conversationId,
             tag,
           });
@@ -77,7 +77,7 @@ export const useConversationsStore = defineStore('conversations', {
         if (tagIndex !== -1) {
           conversation.tags[tagIndex] = newTag;
           try {
-            await api.put('/tag', {
+            await api.put('/conversation/tag', {
               conversationId,
               oldTag,
               newTag,
@@ -97,7 +97,7 @@ export const useConversationsStore = defineStore('conversations', {
         if (tagIndex !== -1) {
           conversation.tags.splice(tagIndex, 1);
           try {
-            await api.delete('/tag', {
+            await api.delete('/conversation/tag', {
               data: {
                 conversationId,
                 tag,
