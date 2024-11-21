@@ -56,7 +56,10 @@ export default configure((/* ctx */) => {
       // publicPath: '/',
       // analyze: true,
       env: {
-        MOCK_API: process.env.VITE_MOCK_API,
+        MOCK_API: process.env.VITE_MOCK_API || '0',
+      },
+      define: {
+        'process.env.MOCK_API': JSON.stringify(process.env.VITE_MOCK_API || 'false'),
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
