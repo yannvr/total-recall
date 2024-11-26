@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { toRaw } from 'vue';
 
 interface Message {
-  text: string;
+  content: string;
   role: string;
   avatar: string;
 }
@@ -115,26 +115,53 @@ export const useConversationsStore = defineStore('conversations', {
     },
     createNewConversation() {
       const newConversation: Conversation = {
-        id: this.nextConversationId++,
         name: 'New Conversation',
         tags: [],
         messages: [],
       };
       this.addConversation(newConversation);
-      this.selectConversation(newconversation.conversationId);
+      this.selectConversation(null);
     },
-    async sendPrompt(prompt: string) {
+    async sendMessage(prompt: string) {
       let conversation = {
-        id: this.nextConversationId++,
+        conversationId: this.nextConversationId.toString(),
         name: prompt.split(' ')[0],
         tags: [],
         messages: [],
       };
 
-      if (this.selectedConversationId === null) {
-        // Create a new conversation if none is selected
-        this.addConversation(conversation);
-        this.selectedConversationId = conversation.conversationId;
+      const isMockApi = import.meta.env.VITE_MOCK_API === '1';
+
+      if (!this.selectedConversationId) {
+        // Post the new conversation
+        try {
+          let response;
+          if (isMockApi) {
+            response = {
+              data: {
+                conversationId: conversation.conversationId,
+                messages: [
+                  {
+                    id: Date.now(),
+                    text: 'This is a mock response from the server.',
+                    role: 'system',
+                  },
+                ],
+              },
+            };
+          } else {
+            response = await api.post('/conversation', {
+              prompt,
+              provider: 'anthropic',
+            });
+          }
+          console.log('New conversation response:', response);
+          this.conversations.push(response.data); // Add the conversation response to the store
+          this.selectedConversationId = response.data.conversationId;
+          // conversation.messages.push(response.data.messages.slice(-1)[0]);
+        } catch (error) {
+          console.error('Error creating new conversation:', error);
+        }
       } else {
         const existingConversation = this.conversations.find(
           (c) => c.conversationId === this.selectedConversationId,
@@ -145,39 +172,27 @@ export const useConversationsStore = defineStore('conversations', {
         } else {
           conversation = existingConversation;
         }
-      }
 
-      // Add user's message to the conversation
-      const userMessage: Message = {
-        id: Date.now(),
-        text: prompt,
-        role: 'user',
-        avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
-      };
-      conversation.messages.push(userMessage);
+        // Add user's message to the conversation
+        const userMessage: Message = {
+          id: Date.now(),
+          text: prompt,
+          role: 'user',
+          avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
+        };
+        conversation.messages.push(userMessage);
 
-      // Check environment variable
-      console.log('isMockApi:', import.meta.env.VITE_MOCK_API);
-      const isMockApi = import.meta.env.VITE_MOCK_API === '1';
-
-      try {
-        let response;
-        // Mockup response from the server
-        if (isMockApi) {
-          response = {
-            data: 'This is a mock response from the server.',
-          };
-        } else {
-          response = await api.post('/conversation', {
+        // Post the message to the existing conversation
+        try {
+          const response = await api.post('/conversation/message', {
             conversationId: this.selectedConversationId,
-            prompt,
-            provider: 'anthropic',
+            message: userMessage,
           });
-          console.log('response:', response);
+          console.log('Message response:', response);
+          conversation.messages.push(response.data.messages.slice(-1)[0]);
+        } catch (error) {
+          console.error('Error sending message:', error);
         }
-        conversation.messages.push(response.data.messages.slice(-1)[0]);
-      } catch (error) {
-        console.error('Error sending query:', error);
       }
     },
   },

@@ -4,7 +4,9 @@
       <q-item
         v-for="message in selectedConversationMessages"
         :key="message.conversationId"
-        :class="message.role === 'assistant' ? 'assistant-message' : 'user-message'"
+        :class="
+          message.role === 'assistant' ? 'assistant-message' : 'user-message'
+        "
       >
         <q-item-section avatar>
           <!-- <q-avatar>
@@ -13,13 +15,20 @@
         </q-item-section>
         <q-item-section>
           <!-- <q-item-label>{{ message.role }}</q-item-label> -->
-          <q-item-label caption>{{ message.content }}</q-item-label>
+          <q-item-label caption>{{
+            message.content
+          }}</q-item-label>
         </q-item-section>
       </q-item>
     </q-list>
     <div class="prompt-container">
       <q-btn icon="add" flat round dense @click="createNewConversation" />
-      <q-input v-model="prompt" placeholder="Type a message..." @keyup.enter="sendPrompt" class="prompt-input" />
+      <q-input
+        v-model="prompt"
+        placeholder="Type a message..."
+        @keyup.enter="sendMessage"
+        class="prompt-input"
+      />
     </div>
   </div>
 </template>
@@ -33,14 +42,14 @@ const prompt = ref('');
 
 const selectedConversationMessages = computed(() => {
   const conversation = store.conversations.find(
-    (c) => c.conversationId === store.selectedConversationId
+    (c) => c.conversationId === store.selectedConversationId,
   );
   console.log('conversation selected', toRaw(conversation));
   console.log('conversation message selected', toRaw(conversation?.messages));
   return conversation ? conversation.messages : [];
 });
 
-function sendPrompt() {
+function sendMessage() {
   if (prompt.value.trim()) {
     store.sendMessage(prompt.value);
     prompt.value = '';

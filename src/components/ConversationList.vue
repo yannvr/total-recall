@@ -53,7 +53,7 @@ function selectConversation(conversationId: string) {
   store.selectConversation(conversationId);
 }
 function getTags(conversation: { tags: string }) {
-  if (conversation.tags.length === 0) {
+  if (conversation?.tags?.length === 0) {
     return ['tag?'];
   }
   return conversation.tags;
