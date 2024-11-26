@@ -1,19 +1,12 @@
 <template>
-  <div @click="handleClick" class="name-editor-container">
-    <q-chip
+  <div class="name-editor-container">
+    <span
       v-if="!isEditing"
-      :label="conversationName || 'unamed'"
-      class="q-mr-sm name-editor-chip"
-      @mouseover="showEditIcon = true"
-      @mouseleave="showEditIcon = false"
+      class="conversation-name"
+      @click.stop="startEditing"
     >
-      <q-icon
-        v-if="showEditIcon"
-        name="edit"
-        class="edit-icon"
-        @click.stop="startEditing"
-      />
-    </q-chip>
+      {{ conversationName || 'unamed' }}
+    </span>
     <q-input
       v-else
       v-model="editableName"
@@ -21,6 +14,8 @@
       @keyup.enter="saveName"
       dense
       autofocus
+      class="conversation-name-input"
+      @click.stop
     />
   </div>
 </template>
@@ -36,13 +31,6 @@ const props = defineProps<{
 const store = useConversationsStore();
 const isEditing = ref(false);
 const editableName = ref(props.conversationName);
-const showEditIcon = ref(false);
-
-const handleClick = () => {
-  if (!isEditing.value) {
-    startEditing();
-  }
-};
 
 const startEditing = () => {
   isEditing.value = true;
@@ -50,35 +38,31 @@ const startEditing = () => {
 
 const saveName = async () => {
   if (editableName.value.trim()) {
-    console.log('editableName', editableName.value);
     await store.editConversationName(props.conversationId, editableName.value);
   }
   isEditing.value = false;
 };
 
 // Watch for changes in the conversation name and update the editableName accordingly
-watch(
-  () => props.conversationName,
-  (newName) => {
-    editableName.value = newName;
-  },
-);
+watch(() => props.conversationName, (newName) => {
+  editableName.value = newName;
+});
 </script>
 
 <style scoped>
 .name-editor-container {
+  display: flex;
+  align-items: center;
   position: relative;
 }
 
-.name-editor-chip {
+.conversation-name {
   cursor: pointer;
-  display: flex;
-  align-items: center;
+  flex-grow: 0;
 }
 
-.edit-icon {
-  margin-left: 5px;
-  cursor: pointer;
-  color: var(--q-color-primary);
+.conversation-name-input {
+  flex-grow: 0;
+  width: auto;
 }
 </style>

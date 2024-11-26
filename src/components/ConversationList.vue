@@ -16,7 +16,7 @@
           :conversationId="conversation.conversationId"
           :conversationName="conversation.name"
         />
-        <q-item-label>{{ conversation.name || "unamed" }}</q-item-label>
+        <!-- <q-item-label>{{ conversation.name || "unamed" }}</q-item-label> -->
         <q-item-label caption>
           <TagEditor v-for="tag in getTags(conversation)" :key="tag" :conversationId="conversation.conversationId" :tag="tag"
              />
