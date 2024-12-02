@@ -6,9 +6,6 @@
       </q-item-section>
     </q-item>
     <q-item-label header>Conversations</q-item-label>
-    <!-- <span v-for="conversation in conversations" :key="conversation.conversationId">
-      {{ conversation.name || "unamed" }} - Tags: {{ conversation.tags.join(', ') }}
-    </span> -->
     <q-item v-for="conversation in filteredConversations" :key="conversation.conversationId"
       :class="{ 'selected-conversation': conversation.conversationId === store.selectedConversationId }">
       <q-item-section @click="selectConversation(conversation.conversationId)">
@@ -16,7 +13,6 @@
           :conversationId="conversation.conversationId"
           :conversationName="conversation.name"
         />
-        <!-- <q-item-label>{{ conversation.name || "unamed" }}</q-item-label> -->
         <q-item-label caption>
           <TagEditor v-for="tag in getTags(conversation)" :key="tag" :conversationId="conversation.conversationId" :tag="tag"
              />
@@ -52,7 +48,7 @@ const filteredConversations = computed(() => {
 function selectConversation(conversationId: string) {
   store.selectConversation(conversationId);
 }
-function getTags(conversation: { tags: string }) {
+function getTags(conversation: { tags: string[] }) {
   if (conversation?.tags?.length === 0) {
     return ['tag?'];
   }

@@ -1,6 +1,7 @@
 // src/stores/theme.ts
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+// @ts-expect-error TODO fix this
 import { useQuasar } from 'quasar';
 
 export const useThemeStore = defineStore('theme', () => {

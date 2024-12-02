@@ -1,5 +1,5 @@
 <template>
-  <div class="name-editor-container">
+  <div class="name-editor-container" @mouseover="showDeleteIcon = true" @mouseleave="showDeleteIcon = false">
     <span
       v-if="!isEditing"
       class="conversation-name"
@@ -17,6 +17,12 @@
       class="conversation-name-input"
       @click.stop
     />
+    <q-icon
+      v-if="showDeleteIcon && !isEditing"
+      name="delete"
+      class="delete-icon"
+      @click.stop="deleteConversation"
+    />
   </div>
 </template>
 
@@ -31,6 +37,7 @@ const props = defineProps<{
 const store = useConversationsStore();
 const isEditing = ref(false);
 const editableName = ref(props.conversationName);
+const showDeleteIcon = ref(false);
 
 const startEditing = () => {
   isEditing.value = true;
@@ -41,6 +48,10 @@ const saveName = async () => {
     await store.editConversationName(props.conversationId, editableName.value);
   }
   isEditing.value = false;
+};
+
+const deleteConversation = async () => {
+  await store.deleteConversation(props.conversationId);
 };
 
 // Watch for changes in the conversation name and update the editableName accordingly
@@ -64,5 +75,11 @@ watch(() => props.conversationName, (newName) => {
 .conversation-name-input {
   flex-grow: 0;
   width: auto;
+}
+
+.delete-icon {
+  margin-left: 10px;
+  cursor: pointer;
+  color: var(--q-color-negative);
 }
 </style>

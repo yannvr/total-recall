@@ -2,14 +2,20 @@ import { api } from 'src/boot/axios';
 import { defineStore } from 'pinia';
 import { toRaw } from 'vue';
 
+interface TextBlockParam {
+  text: string;
+  type: 'text';
+}
+
+// Should match ContentBlock
 interface Message {
-  content: string;
+  content: TextBlockParam;
   role: string;
   avatar: string;
 }
 
 interface Conversation {
-  conversationId: string;
+  conversationId?: string;
   name: string;
   tags: string[];
   messages: Message[];
@@ -18,7 +24,7 @@ interface Conversation {
 export const useConversationsStore = defineStore('conversations', {
   state: () => ({
     conversations: [] as Conversation[],
-    selectedConversationId: null as number | null,
+    selectedConversationId: '',
     nextConversationId: 7, // Updated to account for new conversations
   }),
   actions: {
@@ -50,6 +56,19 @@ export const useConversationsStore = defineStore('conversations', {
         } catch (error) {
           console.error('Error editing conversation name:', error);
         }
+      }
+    },
+    async deleteConversation(conversationId: string) {
+      try {
+        await api.delete('/conversation', {
+          data: { conversationId },
+        });
+        this.conversations = this.conversations.filter(
+          (c) => c.conversationId !== conversationId,
+        );
+        console.log('Conversation deleted:', conversationId);
+      } catch (error) {
+        console.error('Error deleting conversation:', error);
       }
     },
     async addTag(conversationId: string, tag: string) {
@@ -123,7 +142,7 @@ export const useConversationsStore = defineStore('conversations', {
       this.selectConversation(null);
     },
     async sendMessage(prompt: string) {
-      let conversation = {
+      let conversation: Conversation = {
         conversationId: this.nextConversationId.toString(),
         name: prompt.split(' ')[0],
         tags: [],
@@ -140,15 +159,20 @@ export const useConversationsStore = defineStore('conversations', {
             response = {
               data: {
                 conversationId: conversation.conversationId,
+                name: 'Mock Conversation',
+                tags: [],
                 messages: [
                   {
-                    id: Date.now(),
-                    text: 'This is a mock response from the server.',
+                    content: {
+                      text: 'This is a mock response from the server.',
+                      type: 'text',
+                    },
                     role: 'system',
+                    avatar: '',
                   },
                 ],
               },
-            };
+            } as { data: Conversation };
           } else {
             response = await api.post('/conversation', {
               prompt,
@@ -175,8 +199,7 @@ export const useConversationsStore = defineStore('conversations', {
 
         // Add user's message to the conversation
         const userMessage: Message = {
-          id: Date.now(),
-          text: prompt,
+          content: { text: prompt, type: 'text' },
           role: 'user',
           avatar: 'https://cdn.quasar.dev/img/avatar2.jpg',
         };
@@ -184,12 +207,13 @@ export const useConversationsStore = defineStore('conversations', {
 
         // Post the message to the existing conversation
         try {
-          const response = await api.post('/conversation/message', {
+          const response = await api.post('/conversation', {
             conversationId: this.selectedConversationId,
-            message: userMessage,
+            provider: 'anthropic',
+            prompt,
           });
           console.log('Message response:', response);
-          conversation.messages.push(response.data.messages.slice(-1)[0]);
+          Object.assign(conversation, response.data);
         } catch (error) {
           console.error('Error sending message:', error);
         }

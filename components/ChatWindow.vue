@@ -3,7 +3,7 @@
     <q-list v-if="selectedConversationMessages.length" class="message-list">
       <q-item
         v-for="message in selectedConversationMessages"
-        :key="message.conversationId"
+        :key="message.content.text"
         :class="
           message.role === 'assistant' ? 'assistant-message' : 'user-message'
         "
@@ -15,15 +15,16 @@
         </q-item-section>
         <q-item-section>
           <!-- <q-item-label>{{ message.role }}</q-item-label> -->
+          // TODO: Fix this
           <q-item-label caption>{{
-            message.content
+            message.content[0]?.text || message.content.text
           }}</q-item-label>
         </q-item-section>
       </q-item>
     </q-list>
     <div class="prompt-container">
       <q-btn icon="add" flat round dense @click="createNewConversation" />
-      <q-input
+    <q-input
         v-model="prompt"
         placeholder="Type a message..."
         @keyup.enter="sendMessage"
@@ -40,9 +41,10 @@ import { computed, ref, toRaw } from 'vue';
 const store = useConversationsStore();
 const prompt = ref('');
 
+
 const selectedConversationMessages = computed(() => {
   const conversation = store.conversations.find(
-    (c) => c.conversationId === store.selectedConversationId,
+    (c) => c.conversationId == String(store.selectedConversationId),
   );
   console.log('conversation selected', toRaw(conversation));
   console.log('conversation message selected', toRaw(conversation?.messages));
