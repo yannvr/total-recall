@@ -6,16 +6,26 @@
       </q-item-section>
     </q-item>
     <q-item-label header>Conversations</q-item-label>
-    <q-item v-for="conversation in filteredConversations" :key="conversation.conversationId"
-      :class="{ 'selected-conversation': conversation.conversationId === store.selectedConversationId }">
+    <q-item
+      v-for="conversation in filteredConversations"
+      :key="conversation.conversationId"
+      :class="{
+        'selected-conversation':
+          conversation.conversationId === store.selectedConversationId,
+      }"
+    >
       <q-item-section @click="selectConversation(conversation.conversationId)">
         <ConversationNameEditor
           :conversationId="conversation.conversationId"
           :conversationName="conversation.name"
         />
         <q-item-label caption>
-          <TagEditor v-for="tag in getTags(conversation)" :key="tag" :conversationId="conversation.conversationId" :tag="tag"
-             />
+          <TagEditor
+            v-for="tag in getTags(conversation)"
+            :key="tag"
+            :conversationId="conversation.conversationId"
+            :tag="tag"
+          />
         </q-item-label>
       </q-item-section>
     </q-item>
@@ -34,19 +44,19 @@ const searchQuery = ref('');
 const filteredConversations = computed(() => {
   const query = searchQuery.value.toLowerCase();
   // console.log('conversations', toRaw(conversations.value));
-  if(!query) {
+  if (!query) {
     return conversations.value;
   }
   return conversations.value.filter((conversation) => {
     console.log('conversation.tags', toRaw(conversation.tags));
     // Include conversations without tags or with tags matching the search query
-    return (
-      conversation.tags.some((tag) => tag.toLowerCase().includes(query))
-    );
+    return conversation.tags.some((tag) => tag.toLowerCase().includes(query));
   });
 });
-function selectConversation(conversationId: string) {
-  store.selectConversation(conversationId);
+function selectConversation(conversationId: string | undefined) {
+  if (conversationId) {
+    store.selectConversation(conversationId);
+  }
 }
 function getTags(conversation: { tags: string[] }) {
   if (conversation?.tags?.length === 0) {

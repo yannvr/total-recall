@@ -139,7 +139,7 @@ export const useConversationsStore = defineStore('conversations', {
         messages: [],
       };
       this.addConversation(newConversation);
-      this.selectConversation(null);
+      this.selectConversation('');
     },
     async sendMessage(prompt: string) {
       let conversation: Conversation = {

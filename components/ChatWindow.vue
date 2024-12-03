@@ -9,16 +9,11 @@
         "
       >
         <q-item-section avatar>
-          <!-- <q-avatar>
-            <img :src="message.avatar" />
-          </q-avatar> -->
+          <!-- <q-avatar> <img :src="message.avatar" /> </q-avatar> -->
         </q-item-section>
         <q-item-section>
           <!-- <q-item-label>{{ message.role }}</q-item-label> -->
-          // TODO: Fix this
-          <q-item-label caption>{{
-            message.content[0]?.text || message.content.text
-          }}</q-item-label>
+          <q-item-label caption>{{ message.content.text }}</q-item-label>
         </q-item-section>
       </q-item>
     </q-list>
