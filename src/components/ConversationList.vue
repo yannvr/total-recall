@@ -14,16 +14,16 @@
           conversation.conversationId === store.selectedConversationId,
       }"
     >
-      <q-item-section @click="selectConversation(conversation.conversationId)">
+      <q-item-section @click="selectConversation(conversation.conversationId!)">
         <ConversationNameEditor
-          :conversationId="conversation.conversationId"
+          :conversationId="conversation.conversationId!"
           :conversationName="conversation.name"
         />
         <q-item-label caption>
           <TagEditor
             v-for="tag in getTags(conversation)"
             :key="tag"
-            :conversationId="conversation.conversationId"
+            :conversationId="conversation.conversationId!"
             :tag="tag"
           />
         </q-item-label>
@@ -53,10 +53,8 @@ const filteredConversations = computed(() => {
     return conversation.tags.some((tag) => tag.toLowerCase().includes(query));
   });
 });
-function selectConversation(conversationId: string | undefined) {
-  if (conversationId) {
-    store.selectConversation(conversationId);
-  }
+function selectConversation(conversationId: string) {
+  store.selectConversation(conversationId);
 }
 function getTags(conversation: { tags: string[] }) {
   if (conversation?.tags?.length === 0) {

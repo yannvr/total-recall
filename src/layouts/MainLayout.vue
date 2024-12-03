@@ -58,6 +58,7 @@ import { ref, computed } from 'vue';
 import ConversationList from 'src/components/ConversationList.vue';
 // import ThemeSettings from 'src/components/ThemeSettings.vue';
 import { useConversationsStore } from 'src/stores/conversation';
+// @ts-expect-error add Quasar to the project
 import { useQuasar } from 'quasar';
 
 const $q = useQuasar();
@@ -101,11 +102,15 @@ function toggleDarkMode() {
 
 const drawerWidth = ref(300); // Initial width of the drawer
 
-function startResize(event) {
+interface MouseEventWithClientX extends MouseEvent {
+  clientX: number;
+}
+
+function startResize(event: MouseEventWithClientX) {
   const startX = event.clientX;
   const startWidth = drawerWidth.value;
 
-  function onMouseMove(e) {
+  function onMouseMove(e: MouseEventWithClientX) {
     const newWidth = startWidth + (e.clientX - startX);
     drawerWidth.value = Math.max(200, newWidth); // Minimum width of 200px
   }
