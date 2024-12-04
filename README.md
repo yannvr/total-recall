@@ -1,6 +1,8 @@
 # Quasar App (total-recall)
 
-A Quasar Project
+## TODO
+- Allow selection of engine (using server API key on trial basis)
+- Allow users to enter their own API keys
 
 ## Install the dependencies
 ```bash
