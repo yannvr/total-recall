@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import ChatWindow from 'app/components/ChatWindow.vue';
+import ChatWindow from 'src/components/ChatWindow.vue';
 defineOptions({
   name: 'IndexPage'
 });
