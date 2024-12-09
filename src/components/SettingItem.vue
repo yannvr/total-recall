@@ -1,14 +1,14 @@
 <template>
   <div>
     <div v-if="typeof value === 'string'">
-      <SettingInput :label="label" :value="value" @update:value="updateValue" />
+      <q-input
+    :model-value="value"
+    @update:model-value="updateValue"
+    :label="label"
+    dense
+    outlined
+  />
     </div>
-    <!-- <div v-else-if="typeof value === 'number'">
-      <SettingInput :label="label" :value="value" @update:value="updateValue" />
-    </div>
-    <div v-else-if="typeof value === 'boolean'">
-      <q-checkbox :label="label" v-model="value" @update:model-value="updateValue" />
-    </div> -->
     <div v-else-if="typeof value === 'object'">
       <q-expansion-item :label="label">
         <div class="nested-settings">
@@ -23,7 +23,6 @@
 
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
-import SettingInput from 'src/components/SettingInput.vue';
 
 const props = defineProps({
   label: {

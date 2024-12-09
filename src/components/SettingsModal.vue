@@ -48,7 +48,9 @@ function updateSetting(key, value) {
 
 async function saveSettings() {
   try {
-    await store.saveSettings();
+    for (const [key, value] of Object.entries(store.settings)) {
+      await store.saveSettings(key, value);
+    }
     $q.notify({
       type: 'positive',
       message: 'Settings saved successfully!',

@@ -7,16 +7,16 @@ export const settingsStore = defineStore('settings', {
       'OpenAI API key': '',
       'Anthropic API key': '',
       'Perplexity API key': '',
-      'account': {
-        'type': 'free',
-        'expires': '',
-      }
+      account: {
+        type: 'free',
+        expires: '',
+      },
     },
   }),
   actions: {
-    async setSetting(key: string, value: string) {
+    async saveSettings(key: string, value: string) {
       this.settings[key] = value;
-      await api.post('/settings', { key, value });
+      await api.post('/settings', { userId: 'test', settings: this.settings });
     },
   },
 });
