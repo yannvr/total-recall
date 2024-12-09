@@ -1,24 +1,22 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { api } from 'src/boot/axios';
 
-export const useSettingsStore = defineStore('settings', () => {
-  const gptSettings = ref({
-    openai: { apiKey: '' },
-    anthropic: { apiKey: '' },
-    engine3: { apiKey: '' },
-  });
-
-  function setApiKey(engine: string, apiKey: string) {
-    if (gptSettings.value[engine]) {
-      gptSettings.value[engine].apiKey = apiKey;
-    } else {
-      gptSettings.value[engine] = { apiKey };
-    }
-  }
-
-  function getApiKey(engine: string): string {
-    return gptSettings.value[engine]?.apiKey || '';
-  }
-
-  return { gptSettings, setApiKey, getApiKey };
+export const settingsStore = defineStore('settings', {
+  state: () => ({
+    settings: {
+      'OpenAI API key': '',
+      'Anthropic API key': '',
+      'Perplexity API key': '',
+      'account': {
+        'type': 'free',
+        'expires': '',
+      }
+    },
+  }),
+  actions: {
+    async setSetting(key: string, value: string) {
+      this.settings[key] = value;
+      await api.post('/settings', { key, value });
+    },
+  },
 });

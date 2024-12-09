@@ -61,62 +61,24 @@
       <router-view />
     </q-page-container>
 
-    <!-- Inline Settings Modal -->
-    <q-dialog v-model="settingsModalOpen">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">Settings</div>
-        </q-card-section>
-        <q-card-section>
-          <q-select
-            v-model="selectedEngine"
-            :options="aiEngines"
-            label="AI Engine"
-            @update:modelValue="onEngineSelected"
-            emit-value
-            map-options
-          />
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn
-            flat
-            label="Cancel"
-            color="primary"
-            @click="settingsModalOpen = false"
-          />
-          <q-btn flat label="Save" color="primary" @click="saveSettings" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Include the API Key Modal -->
-    <ApiKeyModal v-model="apiKeyModalOpen" :selectedEngine="selectedEngine" />
+    <!-- Include the Settings Modal -->
+    <SettingsModal v-model="settingsModalOpen" :selectedEngine="selectedEngine" />
   </q-layout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-// @ts-ignore-next-line
 import { useQuasar } from 'quasar';
-import { useSettingsStore } from 'src/stores/settings';
 import ConversationList from 'src/components/ConversationList.vue';
-import ApiKeyModal from 'src/components/ApiKeyModal.vue';
+import SettingsModal from 'src/components/SettingsModal.vue';
 import { useConversationsStore } from 'src/stores/conversation';
 
 const $q = useQuasar();
-const settingsStore = useSettingsStore();
 const store = useConversationsStore();
 
 const leftDrawerOpen = ref(false);
 const settingsModalOpen = ref(false);
-const apiKeyModalOpen = ref(false);
 const selectedEngine = ref('openai');
-const aiEngines = ref([
-  { label: 'OpenAI', value: 'openai' },
-  { label: 'Anthropic', value: 'anthropic' },
-  { label: 'Engine 3', value: 'engine3' },
-]);
-
 const isDark = computed(() => $q.dark.isActive);
 const themeIcon = computed(() => (isDark.value ? 'dark_mode' : 'light_mode'));
 
@@ -130,23 +92,6 @@ function toggleLeftDrawer() {
 
 function openSettingsModal() {
   settingsModalOpen.value = true;
-}
-
-function onEngineSelected(value: string) {
-  console.log('Engine selected:', value);
-  selectedEngine.value = value;
-  const apiKey = settingsStore.getApiKey(value);
-  console.log('API Key retrieved:', apiKey);
-  if (!apiKey) {
-    apiKeyModalOpen.value = true; // Open the API Key Modal if no API key exists
-    console.log('Opening ApiKeyModal');
-  }
-}
-
-function saveSettings() {
-  // Save the selected AI engine settings
-  console.log('Selected AI Engine:', selectedEngine.value);
-  settingsModalOpen.value = false;
 }
 
 function toggleDarkMode() {
