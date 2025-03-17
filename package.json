@@ -2,6 +2,18 @@
   "name": "total-recall",
   "version": "0.0.1",
   "description": "Revolutionize your workflow with Total Recall: the ultimate AI-powered multithread engine tracker",
+  "keywords": [
+    "ai",
+    "productivity",
+    "tracker",
+    "workflow",
+    "multithread",
+    "recall",
+    "memory",
+    "assistant",
+    "search",
+    "organization"
+  ],
   "productName": "Total Recall",
   "author": "Yann VR <yannvr@gmail.com>",
   "type": "module",
